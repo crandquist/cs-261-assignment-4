@@ -271,24 +271,25 @@ class BST:
         # Value not found, return False
         return False
 
-    def inorder_traversal(self) -> Queue:
+    def inorder_traversal(self) -> 'Queue':
         """
         Performs an iterative inorder traversal of the tree and returns a Queue with visited node values.
         """
-        result_queue = Queue()  # Queue to store values in the order of traversal
-        stack = []  # Stack to simulate the recursive calls
+        result_queue = Queue()
+        stack = Stack()
 
         current = self._root
 
-        while current or stack:
+        while current or not stack.is_empty():
             # Go to the leftmost node and add nodes to stack
             while current:
-                stack.append(current)
+                stack.push(current)
                 current = current.left
 
             # Process nodes in stack (in-order)
             current = stack.pop()
-            result_queue.enqueue(current.value)  # Add node value to the queue
+            # Add node value to the queue
+            result_queue.enqueue(current.value)
 
             # Move to the right subtree
             current = current.right
