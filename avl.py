@@ -100,30 +100,33 @@ class AVL(BST):
     # ------------------------------------------------------------------ #
 
     def add(self, value: object) -> None:
-
-        # it adds the new node to tree along with it maintains the Avl property.
         new_node = AVLNode(value)
-        if self.is_empty():
+        if not self._root:
             self._root = new_node
         else:
-            curr_node = self._root
-            while curr_node:
-                if value == curr_node.value:
-                    return
-                elif value < curr_node.value:
-                    if curr_node.left is None:
-                        curr_node.left = new_node
-                        new_node.parent = curr_node
-                        break
-                    curr_node = curr_node.left
-                else:
-                    if curr_node.right is None:
-                        curr_node.right = new_node
-                        new_node.parent = curr_node
-                        break
-                    curr_node = curr_node.right
+            self._root = self._add_recursive(self._root, new_node)
 
-            self._rebalance(new_node)
+        # Rebalance the tree if needed after adding a node
+        self._root = self._rebalance(self._root)
+
+    def _add_recursive(self, current: AVLNode, new_node: AVLNode) -> AVLNode:
+        # Base case: If the current node is None, return the new node
+        if current is None:
+            return new_node
+
+        # Compare the value of the new node with the value of the current node
+        # Determine whether to insert in the left or right subtree
+        if new_node.value < current.value:
+            current.left = self._add_recursive(current.left, new_node)
+        else:
+            current.right = self._add_recursive(current.right, new_node)
+
+        # Update the height of the current node
+        current.height = max(self._get_height(current.left), self._get_height(current.right)) + 1
+
+        # Rebalance the tree if needed after the new node is added
+        return self._rebalance(current)
+
     def remove(self, value: object) -> bool:
         # Start by finding the node to remove
         node_to_remove = self._find_node(self._root, value)
@@ -259,7 +262,8 @@ if __name__ == '__main__':
         tree = AVL(case)
         print("Tree after adding:", case)
         print(tree)
-
+        # Add this line to reassign the tree's root after the addition
+        tree._root = tree._add_recursive(tree._root, AVLNode(case[-1]))
 
     print("\nPDF - method add() example 2")
     print("----------------------------")
