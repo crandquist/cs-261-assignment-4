@@ -100,32 +100,30 @@ class AVL(BST):
     # ------------------------------------------------------------------ #
 
     def add(self, value: object) -> None:
+
+        # it adds the new node to tree along with it maintains the Avl property.
         new_node = AVLNode(value)
-        if not self._root:
+        if self.is_empty():
             self._root = new_node
         else:
-            self._root = self._add_recursive(self._root, new_node)
+            curr_node = self._root
+            while curr_node:
+                if value == curr_node.value:
+                    return
+                elif value < curr_node.value:
+                    if curr_node.left is None:
+                        curr_node.left = new_node
+                        new_node.parent = curr_node
+                        break
+                    curr_node = curr_node.left
+                else:
+                    if curr_node.right is None:
+                        curr_node.right = new_node
+                        new_node.parent = curr_node
+                        break
+                    curr_node = curr_node.right
 
-    def _add_recursive(self, current: AVLNode, new_node: AVLNode) -> AVLNode:
-        # Base case: If the current node is None, return the new node
-        if current is None:
-            return new_node
-
-        # Compare the value of the new node with the value of the current node
-        # Determine whether to insert in the left or right subtree
-        if new_node.value < current.value:
-            current.left = self._add_recursive(current.left, new_node)
-        else:
-            current.right = self._add_recursive(current.right, new_node)
-
-        # Update the height of the current node
-        current.height = max(self._get_height(current.left), self._get_height(current.right)) + 1
-
-        # Rebalance the tree if needed
-        self._rebalance(current)
-
-        return current
-
+            self._rebalance(new_node)
     def remove(self, value: object) -> bool:
         # Start by finding the node to remove
         node_to_remove = self._find_node(self._root, value)
@@ -192,9 +190,10 @@ class AVL(BST):
         return self._get_height(node.left) - self._get_height(node.right)
 
     def _get_height(self, node: AVLNode) -> int:
-        if node is None:
+        if node is not None:
+            return node.height
+        else:
             return -1
-        return node.height
 
     def _rotate_left(self, node: AVLNode) -> AVLNode:
         new_root = node.right
@@ -202,8 +201,8 @@ class AVL(BST):
         new_root.left = node
 
         # Update heights
-        self._update_height(node)
-        self._update_height(new_root)
+        self._update_height(node)  # Update height of the rotated node
+        self._update_height(new_root)  # Update height of the new root
 
         return new_root
 
@@ -213,8 +212,8 @@ class AVL(BST):
         new_root.right = node
 
         # Update heights
-        self._update_height(node)
-        self._update_height(new_root)
+        self._update_height(node)  # Update height of the rotated node
+        self._update_height(new_root)  # Update height of the new root
 
         return new_root
 
@@ -223,7 +222,10 @@ class AVL(BST):
             node.height = max(self._get_height(node.left), self._get_height(node.right)) + 1
 
     def _rebalance(self, node: AVLNode) -> AVLNode:
-        # Calculate balance factor
+        # Update the height of the current node
+        self._update_height(node)
+
+        # Calculate the balance factor
         balance = self._balance_factor(node)
 
         # If the node is unbalanced, perform rotations to rebalance the tree
@@ -238,7 +240,7 @@ class AVL(BST):
                 node.right = self._rotate_right(node.right)
             return self._rotate_left(node)  # Return the new root after rotation
 
-        return node  # Return the original node if no rotations are performed
+        return node
 
 # ------------------- BASIC TESTING -----------------------------------------
 
@@ -255,7 +257,9 @@ if __name__ == '__main__':
     )
     for case in test_cases:
         tree = AVL(case)
+        print("Tree after adding:", case)
         print(tree)
+
 
     print("\nPDF - method add() example 2")
     print("----------------------------")
