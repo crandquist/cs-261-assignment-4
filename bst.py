@@ -147,31 +147,37 @@ class BST:
                         current = current.right
 
     def remove(self, value):
-        """
-        Removes a node from the tree.
-        """
-        self._root = self._remove_node(None, self._root, value)
+        if self._root is None:
+            return False  # If tree is empty, return False
 
-    def _remove_node(self, parent, current, value):
-        """
-        Helper method for remove().
-        """
-        if current is None:
-            return current
+        parent, node = self._find_node(value)
 
-        if value < current.value:
-            current.left = self._remove_node(current, current.left, value)
-        elif value > current.value:
-            current.right = self._remove_node(current, current.right, value)
+        if node is None:
+            return False  # If value doesn't exist in the tree, return False
+
+        num_children = sum(1 for child in (node.left, node.right) if child)
+
+        if num_children == 0:
+            self._remove_no_subtrees(parent, node)
+        elif num_children == 1:
+            self._remove_one_subtree(parent, node)
         else:
-            if current.left is None and current.right is None:
-                self._remove_no_subtrees(parent, current)
-            elif current.left is None or current.right is None:
-                self._remove_one_subtree(parent, current)
-            else:
-                self._remove_two_subtrees(parent, current)
+            self._remove_two_subtrees(parent, node)
 
-        return current
+        return True  # Return True indicating successful removal
+
+    def _find_node(self, value):
+        parent = None
+        current = self._root
+
+        while current and current.value != value:
+            parent = current
+            if value < current.value:
+                current = current.left
+            else:
+                current = current.right
+
+        return parent, current
 
     # Consider implementing methods that handle different removal scenarios; #
     # you may find that you're able to use some of them in the AVL.          #
@@ -179,37 +185,30 @@ class BST:
     # Remove these method stubs if you decide not to use them.               #
     # Change these methods in any way you'd like.                            #
 
-    def _remove_no_subtrees(self, remove_parent: BSTNode, remove_node: BSTNode) -> None:
-        """
-         Removes a node that has no subtrees (neither left nor right child nodes).
-        """
+    def _remove_no_subtrees(self, remove_parent, remove_node):
         # Remove node that has no subtrees (no left or right nodes)
         if remove_parent is None:  # If it's the root node
-            self.root = None
-        elif remove_parent.left == remove_node:
+            self._root = None
+        elif remove_parent.left == remove_node:  # If the node is the left child
             remove_parent.left = None
         else:
             remove_parent.right = None
-    def _remove_one_subtree(self, remove_parent: BSTNode, remove_node: BSTNode) -> None:
-        """
-        Removes a node that has one subtree.
-        """
-        if remove_node.left:
+
+    def _remove_one_subtree(self, remove_parent, remove_node):
+        # Remove node that has a left or right subtree (only)
+        if remove_node.left:  # If there's a left subtree
             subtree = remove_node.left
         else:
-            subtree = remove_node.right
+            subtree = remove_node.right  # If there's a right subtree
 
         if remove_parent is None:  # If it's the root node
-            self.root = subtree
-        elif remove_parent.left == remove_node:
+            self._root = subtree
+        elif remove_parent.left == remove_node:  # If the node is the left child
             remove_parent.left = subtree
         else:
-            remove_parent.right = subtree
+            remove_parent.right = subtree  # If the node is the right child
 
-    def _remove_two_subtrees(self, remove_parent: BSTNode, remove_node: BSTNode) -> None:
-        """
-        Removes a node that has two subtrees.
-        """
+    def _remove_two_subtrees(self, remove_parent, remove_node):
         # Remove node that has two subtrees
         successor_parent = remove_node
         successor = remove_node.right
@@ -218,12 +217,10 @@ class BST:
             successor_parent = successor
             successor = successor.left
 
-        # Replace the value of the node to be removed with its inorder successor
-        remove_node.value = successor.value
+        remove_node.value = successor.value  # Replace value with successor's value
 
-        # Remove the successor node from its original position
         if successor_parent.left == successor:
-            successor_parent.left = successor.right
+            successor_parent.left = successor.right  # Remove successor from its original position
         else:
             successor_parent.right = successor.right
 
