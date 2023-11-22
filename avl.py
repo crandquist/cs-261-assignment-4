@@ -108,50 +108,143 @@ class AVL(BST):
         if self._root is None:
             self._root = new_node
         else:
-            self._add_helper(self._root, new_node)
+            self._root = self._add_helper(self._root, new_node)
 
     def _add_helper(self, current: AVLNode, new_node: AVLNode) -> AVLNode:
         """
         Helper method to recursively add a new node while maintaining AVL property.
         """
+        if current is None:
+            return new_node
+
         if new_node.value < current.value:
-            if current.left is None:
-                current.left = new_node
-                new_node.parent = current
-            else:
-                self._add_helper(current.left, new_node)
+            current.left = self._add_helper(current.left, new_node)
         else:
-            if current.right is None:
-                current.right = new_node
-                new_node.parent = current
-            else:
-                self._add_helper(current.right, new_node)
+            current.right = self._add_helper(current.right, new_node)
 
         # Update the height of the current node
         current.height = 1 + max(self._get_height(current.left), self._get_height(current.right))
 
         # Rebalance the tree if necessary
-        self._rebalance(current)
+        return self._rebalance(current)
 
     def remove(self, value: object) -> bool:
         """
-        TODO: Write your implementation
+        Removes a node with the given value while maintaining AVL property.
+        Returns True if the value was found and removed, False otherwise.
         """
-        pass
+        if not self._root:
+            return False  # Empty tree
 
-    # Experiment and see if you can use the optional                         #
-    # subtree removal methods defined in the BST here in the AVL.            #
-    # Call normally using self -> self._remove_no_subtrees(parent, node)     #
-    # You need to override the _remove_two_subtrees() method in any case.    #
-    # Remove these comments.                                                 #
-    # Remove these method stubs if you decide not to use them.               #
-    # Change this method in any way you'd like.                              #
+        # Call helper method to remove the node
+        if not self._remove_helper(self._root, None, value):
+            return False  # Value not found in the tree
+        else:
+            return True  # Value removed successfully
+
+    def _remove_helper(self, current: AVLNode, parent: AVLNode, value: object) -> bool:
+        """
+        Helper method to recursively remove a node while maintaining AVL property.
+        Returns True if the value was found and removed, False otherwise.
+        """
+        if not current:
+            return False  # Value not found
+
+        if value < current.value:
+            # Search in the left subtree
+            if not self._remove_helper(current.left, current, value):
+                return False
+        elif value > current.value:
+            # Search in the right subtree
+            if not self._remove_helper(current.right, current, value):
+                return False
+        else:
+            # Value found, perform removal
+            if not current.left:
+                # No left child or no children at all
+                if not current.right:
+                    # Leaf node case
+                    if parent:
+                        if parent.left == current:
+                            parent.left = None
+                        else:
+                            parent.right = None
+                    else:
+                        self._root = None
+                else:
+                    # Only right child case
+                    if parent:
+                        if parent.left == current:
+                            parent.left = current.right
+                        else:
+                            parent.right = current.right
+                    else:
+                        self._root = current.right
+            elif not current.right:
+                # Only left child case
+                if parent:
+                    if parent.left == current:
+                        parent.left = current.left
+                    else:
+                        parent.right = current.left
+                else:
+                    self._root = current.left
+            else:
+                # Node with two children case
+                # Call the _remove_two_subtrees method
+                self._root = self._remove_two_subtrees(current, current)
+
+            # After removal, update heights and rebalance
+            if parent:
+                parent.height = 1 + max(self._get_height(parent.left), self._get_height(parent.right))
+                self._rebalance(parent)
+
+            return True  # Value found and removed
+
+        # Update the height and rebalance the current node
+        current.height = 1 + max(self._get_height(current.left), self._get_height(current.right))
+        self._rebalance(current)
+
+        return True  # Value found and removed
 
     def _remove_two_subtrees(self, remove_parent: AVLNode, remove_node: AVLNode) -> AVLNode:
         """
-        TODO: Write your implementation
+        Removes a node with both left and right subtrees while maintaining AVL property.
         """
-        pass
+        successor = remove_node.right
+        successor_parent = remove_node
+
+        # Find the in-order successor (the leftmost node in the right subtree)
+        while successor.left:
+            successor_parent = successor
+            successor = successor.left
+
+        # If the in-order successor is not the right child of the node to remove
+        if successor != remove_node.right:
+            # Update the parent pointers and left child of the in-order successor
+            successor_parent.left = successor.right
+            if successor.right:
+                successor.right.parent = successor_parent
+
+            # Update the right subtree of the node to remove
+            successor.right = remove_node.right
+            remove_node.right.parent = successor
+
+        # Update the left subtree of the node to remove
+        successor.left = remove_node.left
+        remove_node.left.parent = successor
+
+        # Update the parent pointers for the node to remove
+        if remove_parent:
+            if remove_node == remove_parent.left:
+                remove_parent.left = successor
+            else:
+                remove_parent.right = successor
+
+        successor.parent = remove_parent
+
+        # Return the successor as the new root after removal
+        return self._rebalance(successor)
 
     def _balance_factor(self, node: AVLNode) -> int:
         """
