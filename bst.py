@@ -1,8 +1,8 @@
-# Name:
-# OSU Email:
+# Name: Cat Randquist
+# OSU Email: randquic@oregonstate.edu
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
+# Assignment: 4
+# Due Date: 11/20/23
 # Description:
 
 
@@ -105,11 +105,31 @@ class BST:
 
     # ------------------------------------------------------------------ #
 
+    def _add_helper(self, current: BSTNode, new: BSTNode) -> None:
+        """
+        Helper method for add. Does recursive tree traversal to find
+        the correct location for the new node.
+        """
+        if new.value < current.value:
+            if current.left is None:
+                current.left = new
+            else:
+                self._add_helper(current.left, new)
+        else:
+            if current.right is None:
+                current.right = new
+            else:
+                self._add_helper(current.right, new)
+
     def add(self, value: object) -> None:
         """
         TODO: Write your implementation
         """
-        pass
+        node = BSTNode(value)
+        if self._root is None:
+            self._root = node
+        else:
+            self._add_helper(self._root, node)
 
     def remove(self, value: object) -> bool:
         """
