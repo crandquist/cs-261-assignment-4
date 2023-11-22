@@ -21,9 +21,9 @@ class BSTNode:
         Initialize a new BST node
         DO NOT CHANGE THIS METHOD IN ANY WAY
         """
-        self.value = value   # to store node's data
-        self.left = None     # pointer to root of left subtree
-        self.right = None    # pointer to root of right subtree
+        self.value = value  # to store node's data
+        self.left = None  # pointer to root of left subtree
+        self.right = None  # pointer to root of right subtree
 
     def __str__(self) -> str:
         """
@@ -298,27 +298,48 @@ class BST:
 
     def find_min(self) -> object:
         """
-        TODO: Write your implementation
+        Returns the lowest value in the tree.
         """
-        pass
+        if self._root is None:
+            # If tree is empty, return None
+            return None
+
+        current = self._root
+
+        # Traverse to the leftmost node (the node with the minimum value)
+        while current.left:
+            current = current.left
+
+        return current.value
 
     def find_max(self) -> object:
         """
-        TODO: Write your implementation
+        Returns the highest value in the tree.
         """
-        pass
+        if self._root is None:
+            # If tree is empty, return None
+            return None
+
+        current = self._root
+
+        # Traverse to the rightmost node (the node with the maximum value)
+        while current.right:
+            current = current.right
+
+        return current.value
 
     def is_empty(self) -> bool:
         """
-        TODO: Write your implementation
+        Returns True if the tree is empty, otherwise False.
         """
-        pass
+        return self._root is None
 
     def make_empty(self) -> None:
         """
-        TODO: Write your implementation
+        Removes all nodes from the tree by setting the root to None.
         """
-        pass
+        self._root = None
+
 
 
 # ------------------- BASIC TESTING -----------------------------------------
