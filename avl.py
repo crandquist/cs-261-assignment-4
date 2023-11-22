@@ -1,9 +1,9 @@
-# Name:
-# OSU Email:
+# Name: Cat Randquist
+# OSU Email: randquic@oregonstate
 # Course: CS261 - Data Structures
-# Assignment:
-# Due Date:
-# Description:
+# Assignment: 4
+# Due Date: 11/20/23
+# Description: AVL Tree Implementation
 
 
 import random
@@ -101,9 +101,37 @@ class AVL(BST):
 
     def add(self, value: object) -> None:
         """
-        TODO: Write your implementation
+        Adds a new value to the AVL tree while maintaining its AVL property.
         """
-        pass
+        new_node = AVLNode(value)
+
+        if self._root is None:
+            self._root = new_node
+        else:
+            self._add_helper(self._root, new_node)
+
+    def _add_helper(self, current: AVLNode, new_node: AVLNode) -> AVLNode:
+        """
+        Helper method to recursively add a new node while maintaining AVL property.
+        """
+        if new_node.value < current.value:
+            if current.left is None:
+                current.left = new_node
+                new_node.parent = current
+            else:
+                self._add_helper(current.left, new_node)
+        else:
+            if current.right is None:
+                current.right = new_node
+                new_node.parent = current
+            else:
+                self._add_helper(current.right, new_node)
+
+        # Update the height of the current node
+        current.height = 1 + max(self._get_height(current.left), self._get_height(current.right))
+
+        # Rebalance the tree if necessary
+        self._rebalance(current)
 
     def remove(self, value: object) -> bool:
         """
@@ -133,15 +161,20 @@ class AVL(BST):
 
     def _balance_factor(self, node: AVLNode) -> int:
         """
-        TODO: Write your implementation
+        Calculates the balance factor for a given node in the AVL tree.
         """
-        pass
+        if node is None:
+            return 0
+        return self._get_height(node.left) - self._get_height(node.right)
 
     def _get_height(self, node: AVLNode) -> int:
         """
-        TODO: Write your implementation
+        Returns the height of a node in the AVL tree.
         """
-        pass
+        if node is None:
+            return -1  # Height of an empty node is -1
+        else:
+            return node.height
 
     def _rotate_left(self, node: AVLNode) -> AVLNode:
         """
@@ -163,9 +196,27 @@ class AVL(BST):
 
     def _rebalance(self, node: AVLNode) -> None:
         """
-        TODO: Write your implementation
+        Rebalances the AVL tree after insertion if necessary.
         """
-        pass
+        while node is not None:
+            self._update_height(node)
+
+            balance = self._balance_factor(node)
+
+            # Left heavy
+            if balance > 1:
+                # Left-Right case
+                if self._balance_factor(node.left) < 0:
+                    self._rotate_left(node.left)
+                self._rotate_right(node)
+            # Right heavy
+            elif balance < -1:
+                # Right-Left case
+                if self._balance_factor(node.right) > 0:
+                    self._rotate_right(node.right)
+                self._rotate_left(node)
+
+            node = node.parent
 
 # ------------------- BASIC TESTING -----------------------------------------
 

@@ -3,7 +3,7 @@
 # Course: CS261 - Data Structures
 # Assignment: 4
 # Due Date: 11/20/23
-# Description:
+# Description: Implementation of a Binary Search Tree (BST) class and its associated methods.
 
 
 import random
