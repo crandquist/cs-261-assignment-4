@@ -247,8 +247,10 @@ class BST:
         """
         Returns True if the value is in the tree, otherwise False.
         """
+
+        # If the tree is empty, return False.
         if self._root is None:
-            return False  # If tree is empty, return False
+            return False
 
         # Start traversal from the root
         current = self._root
@@ -256,7 +258,8 @@ class BST:
         # Traverse the tree to find the value
         while current:
             if current.value == value:
-                return True  # Value found, return True
+                # Value found, return True
+                return True
 
             # Move to the left subtree if value is smaller
             elif value < current.value:
@@ -265,13 +268,32 @@ class BST:
             else:
                 current = current.right
 
-        return False  # Value not found in the tree, return False
+        # Value not found, return False
+        return False
 
     def inorder_traversal(self) -> Queue:
         """
-        TODO: Write your implementation
+        Performs an iterative inorder traversal of the tree and returns a Queue with visited node values.
         """
-        pass
+        result_queue = Queue()  # Queue to store values in the order of traversal
+        stack = []  # Stack to simulate the recursive calls
+
+        current = self._root
+
+        while current or stack:
+            # Go to the leftmost node and add nodes to stack
+            while current:
+                stack.append(current)
+                current = current.left
+
+            # Process nodes in stack (in-order)
+            current = stack.pop()
+            result_queue.enqueue(current.value)  # Add node value to the queue
+
+            # Move to the right subtree
+            current = current.right
+
+        return result_queue
 
     def find_min(self) -> object:
         """
