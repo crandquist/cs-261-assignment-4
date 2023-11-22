@@ -172,21 +172,65 @@ class AVL(BST):
 
     def _rotate_left(self, node: AVLNode) -> AVLNode:
         """
-        TODO: Write your implementation
+        Performs a left rotation on the given node.
         """
-        pass
+        new_root = node.right
+        node.right = new_root.left
+
+        if new_root.left:
+            new_root.left.parent = node
+
+        new_root.parent = node.parent
+
+        if not node.parent:
+            self._root = new_root
+        elif node == node.parent.left:
+            node.parent.left = new_root
+        else:
+            node.parent.right = new_root
+
+        new_root.left = node
+        node.parent = new_root
+
+        # Update heights after rotation
+        node.height = 1 + max(self._get_height(node.left), self._get_height(node.right))
+        new_root.height = 1 + max(self._get_height(new_root.left), self._get_height(new_root.right))
+
+        return new_root
 
     def _rotate_right(self, node: AVLNode) -> AVLNode:
         """
-        TODO: Write your implementation
+        Performs a right rotation on the given node.
         """
-        pass
+        new_root = node.left
+        node.left = new_root.right
 
+        if new_root.right:
+            new_root.right.parent = node
+
+        new_root.parent = node.parent
+
+        if not node.parent:
+            self._root = new_root
+        elif node == node.parent.right:
+            node.parent.right = new_root
+        else:
+            node.parent.left = new_root
+
+        new_root.right = node
+        node.parent = new_root
+
+        # Update heights after rotation
+        node.height = 1 + max(self._get_height(node.left), self._get_height(node.right))
+        new_root.height = 1 + max(self._get_height(new_root.left), self._get_height(new_root.right))
+
+        return new_root
     def _update_height(self, node: AVLNode) -> None:
-        """
-        TODO: Write your implementation
-        """
-        pass
+        def _update_height(self, node: AVLNode) -> None:
+            """
+            Updates the height of a node in the AVL tree.
+            """
+            node.height = 1 + max(self._get_height(node.left), self._get_height(node.right))
 
     def _rebalance(self, node: AVLNode) -> None:
         """
