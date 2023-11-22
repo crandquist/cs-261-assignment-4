@@ -245,9 +245,27 @@ class BST:
 
     def contains(self, value: object) -> bool:
         """
-        TODO: Write your implementation
+        Returns True if the value is in the tree, otherwise False.
         """
-        pass
+        if self._root is None:
+            return False  # If tree is empty, return False
+
+        # Start traversal from the root
+        current = self._root
+
+        # Traverse the tree to find the value
+        while current:
+            if current.value == value:
+                return True  # Value found, return True
+
+            # Move to the left subtree if value is smaller
+            elif value < current.value:
+                current = current.left
+            # Move to the right subtree if value is larger
+            else:
+                current = current.right
+
+        return False  # Value not found in the tree, return False
 
     def inorder_traversal(self) -> Queue:
         """
