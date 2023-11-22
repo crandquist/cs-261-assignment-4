@@ -105,37 +105,64 @@ class BST:
 
     # ------------------------------------------------------------------ #
 
-    def _add_helper(self, current: BSTNode, new: BSTNode) -> None:
-        """
-        Helper method for add. Does recursive tree traversal to find
-        the correct location for the new node.
-        """
-        if new.value < current.value:
-            if current.left is None:
-                current.left = new
-            else:
-                self._add_helper(current.left, new)
-        else:
-            if current.right is None:
-                current.right = new
-            else:
-                self._add_helper(current.right, new)
-
     def add(self, value: object) -> None:
         """
-        TODO: Write your implementation
+        Adds a new node to the tree.
         """
-        node = BSTNode(value)
-        if self._root is None:
-            self._root = node
-        else:
-            self._add_helper(self._root, node)
+        new_node = BSTNode(value)
 
-    def remove(self, value: object) -> bool:
-        """
-        TODO: Write your implementation
-        """
-        pass
+        if self._root is None:
+            self._root = new_node
+        else:
+            current = self._root
+            while True:
+                if value < current.value:
+                    if current.left is None:
+                        current.left = new_node
+                        break
+                    else:
+                        current = current.left
+                else:
+                    if current.right is None:
+                        current.right = new_node
+                        break
+                    else:
+                        current = current.right
+
+    def remove(self, value):
+        self.root = self._remove_node(self._root, value)
+
+    def _remove_node(self, root, value):
+        if root is None:
+            return root
+
+        if value < root.value:
+            root.left = self._remove_node(root.left, value)
+        elif value > root.value:
+            root.right = self._remove_node(root.right, value)
+        else:
+            # Node with only one child or no child
+            if root.left is None:
+                temp = root.right
+                root = None
+                return temp
+            elif root.right is None:
+                temp = root.left
+                root = None
+                return temp
+
+            # Node with two children
+            temp = self._find_min(root.right)
+            root.value = temp.value
+            root.right = self._remove_node(root.right, temp.value)
+
+        return root
+
+    def _find_min(self, node):
+        current = node
+        while current.left is not None:
+            current = current.left
+        return current
 
     # Consider implementing methods that handle different removal scenarios; #
     # you may find that you're able to use some of them in the AVL.          #
