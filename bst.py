@@ -109,30 +109,53 @@ class BST:
         """
         Adds a new node to the tree.
         """
+
+        # Create a new node with the given value.
         new_node = BSTNode(value)
 
+        # If the tree is empty, set the new node as the root.
         if self._root is None:
             self._root = new_node
+
+        # Otherwise, traverse the tree and add the new node in the correct position.
         else:
             current = self._root
             while True:
+
+                # If the value is less than the current node's value, go left.
                 if value < current.value:
+
+                    # If the current node's left child is None, set the new node as the left child.
                     if current.left is None:
                         current.left = new_node
+                        # Break out of the loop, new node added.
                         break
                     else:
+                        # Otherwise, set the current node to the left child and continue traversing.
                         current = current.left
+
+                # If the value is greater than the current node's value, go right.
                 else:
                     if current.right is None:
                         current.right = new_node
+
+                        # Break out of the loop, new node added.
                         break
+
+                    # Otherwise, set the current node to the right child and continue traversing.
                     else:
                         current = current.right
 
     def remove(self, value):
-        self.root = self._remove_node(None, self._root, value)
+        """
+        Removes a node from the tree.
+        """
+        self._root = self._remove_node(None, self._root, value)
 
     def _remove_node(self, parent, current, value):
+        """
+        Helper method for remove().
+        """
         if current is None:
             return current
 
@@ -158,7 +181,7 @@ class BST:
 
     def _remove_no_subtrees(self, remove_parent: BSTNode, remove_node: BSTNode) -> None:
         """
-        TODO: Write your implementation
+         Removes a node that has no subtrees (neither left nor right child nodes).
         """
         # Remove node that has no subtrees (no left or right nodes)
         if remove_parent is None:  # If it's the root node
@@ -169,7 +192,7 @@ class BST:
             remove_parent.right = None
     def _remove_one_subtree(self, remove_parent: BSTNode, remove_node: BSTNode) -> None:
         """
-        TODO: Write your implementation
+        Removes a node that has one subtree.
         """
         if remove_node.left:
             subtree = remove_node.left
@@ -185,7 +208,7 @@ class BST:
 
     def _remove_two_subtrees(self, remove_parent: BSTNode, remove_node: BSTNode) -> None:
         """
-        TODO: Write your implementation
+        Removes a node that has two subtrees.
         """
         # Remove node that has two subtrees
         successor_parent = remove_node
