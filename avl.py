@@ -153,12 +153,6 @@ class AVL(BST):
         """
         pass
 
-    # It's highly recommended to implement                          #
-    # the following methods for balancing the AVL Tree.             #
-    # Remove these comments.                                        #
-    # Remove these method stubs if you decide not to use them.      #
-    # Change these methods in any way you'd like.                   #
-
     def _balance_factor(self, node: AVLNode) -> int:
         """
         Calculates the balance factor for a given node in the AVL tree.
