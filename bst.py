@@ -147,9 +147,15 @@ class BST:
                         current = current.right
 
     def remove(self, value):
+        """
+        Removes the node with the given value from the tree.
+        """
+
+        # If the tree is empty, return False.
         if self._root is None:
             return False  # If tree is empty, return False
 
+        # Find the node to remove and its parent.
         parent, node = self._find_node(value)
 
         if node is None:
@@ -157,6 +163,7 @@ class BST:
 
         num_children = sum(1 for child in (node.left, node.right) if child)
 
+        # Remove the node based on the number of children.
         if num_children == 0:
             self._remove_no_subtrees(parent, node)
         elif num_children == 1:
@@ -167,9 +174,13 @@ class BST:
         return True  # Return True indicating successful removal
 
     def _find_node(self, value):
+        """
+        Finds the node with the given value and returns the parent and node.
+        """
         parent = None
         current = self._root
 
+        # Traverse the tree until the value is found or the end of the tree is reached.
         while current and current.value != value:
             parent = current
             if value < current.value:
@@ -177,50 +188,58 @@ class BST:
             else:
                 current = current.right
 
+        # Return the parent and node.
         return parent, current
 
-    # Consider implementing methods that handle different removal scenarios; #
-    # you may find that you're able to use some of them in the AVL.          #
-    # Remove these comments.                                                 #
-    # Remove these method stubs if you decide not to use them.               #
-    # Change these methods in any way you'd like.                            #
-
     def _remove_no_subtrees(self, remove_parent, remove_node):
+        """
+        Removes a node that has no subtrees.
+        """
         # Remove node that has no subtrees (no left or right nodes)
-        if remove_parent is None:  # If it's the root node
+        if remove_parent is None:
             self._root = None
-        elif remove_parent.left == remove_node:  # If the node is the left child
+        elif remove_parent.left == remove_node:
             remove_parent.left = None
         else:
             remove_parent.right = None
 
     def _remove_one_subtree(self, remove_parent, remove_node):
-        # Remove node that has a left or right subtree (only)
-        if remove_node.left:  # If there's a left subtree
+        """
+        Removes a node that has one subtree.
+        """
+
+        # Determine the existing subtree (left or right)
+        if remove_node.left:
             subtree = remove_node.left
         else:
-            subtree = remove_node.right  # If there's a right subtree
+            subtree = remove_node.right
 
-        if remove_parent is None:  # If it's the root node
+        # Adjust the parent's pointer to the subtree
+        if remove_parent is None:
             self._root = subtree
-        elif remove_parent.left == remove_node:  # If the node is the left child
+        elif remove_parent.left == remove_node:
             remove_parent.left = subtree
         else:
-            remove_parent.right = subtree  # If the node is the right child
+            remove_parent.right = subtree
 
     def _remove_two_subtrees(self, remove_parent, remove_node):
-        # Remove node that has two subtrees
+        """
+        Removes a node that has two subtrees.
+        """
         successor_parent = remove_node
         successor = remove_node.right
 
+        # Find the successor node
         while successor.left:
             successor_parent = successor
             successor = successor.left
 
-        remove_node.value = successor.value  # Replace value with successor's value
+        # Replace the node's value with the successor's value
+        remove_node.value = successor.value
 
+        # Remove the successor node
         if successor_parent.left == successor:
-            successor_parent.left = successor.right  # Remove successor from its original position
+            successor_parent.left = successor.right
         else:
             successor_parent.right = successor.right
 
