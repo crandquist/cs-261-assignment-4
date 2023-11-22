@@ -127,10 +127,44 @@ class AVL(BST):
         return current
 
     def remove(self, value: object) -> bool:
-        """
-        TODO: Write your implementation
-        """
-        pass
+        # Start by finding the node to remove
+        node_to_remove = self._find_node(self._root, value)
+
+        if node_to_remove:
+            self._root = self._remove_recursive(self._root, value)
+            return True  # Return True if the removal was successful
+        else:
+            return False  # Return False if the node with the given value doesn't exist
+
+    def _remove_recursive(self, current: AVLNode, value: object) -> AVLNode:
+        # Base case: If the current node is None, return None
+        if current is None:
+            return None
+
+        if value < current.value:
+            current.left = self._remove_recursive(current.left, value)
+        elif value > current.value:
+            current.right = self._remove_recursive(current.right, value)
+        else:
+            # Node found, perform removal
+            if not current.left and not current.right:
+                # Case 1: Node is a leaf node
+                return None
+            elif not current.left or not current.right:
+                # Case 2: Node has only one child
+                if not current.left:
+                    return current.right
+                else:
+                    return current.left
+            else:
+                # Case 3: Node has two children
+                successor = self._find_min(current.right)
+                current.value = successor.value
+                current.right = self._remove_recursive(current.right, successor.value)
+
+        # Update the height and rebalance the tree
+        self._update_height(current)
+        return self._rebalance(current)
 
     # Experiment and see if you can use the optional                         #
     # subtree removal methods defined in the BST here in the AVL.            #
@@ -188,7 +222,7 @@ class AVL(BST):
         if node:
             node.height = max(self._get_height(node.left), self._get_height(node.right)) + 1
 
-    def _rebalance(self, node: AVLNode) -> None:
+    def _rebalance(self, node: AVLNode) -> AVLNode:
         # Calculate balance factor
         balance = self._balance_factor(node)
 
@@ -197,12 +231,14 @@ class AVL(BST):
             if self._balance_factor(node.left) < 0:
                 # Left-right case: Left rotation on left child, then right rotation on node
                 node.left = self._rotate_left(node.left)
-            return self._rotate_right(node)
-        if balance < -1:
+            return self._rotate_right(node)  # Return the new root after rotation
+        elif balance < -1:
             if self._balance_factor(node.right) > 0:
                 # Right-left case: Right rotation on right child, then left rotation on node
                 node.right = self._rotate_right(node.right)
-            return self._rotate_left(node)
+            return self._rotate_left(node)  # Return the new root after rotation
+
+        return node  # Return the original node if no rotations are performed
 
 # ------------------- BASIC TESTING -----------------------------------------
 
